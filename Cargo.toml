@@ -10,6 +10,7 @@ categories = ["command-line-utilities"]
 homepage = "https://github.com/fvdsn/nepo"
 repository = "https://github.com/fvdsn/nepo"
 readme = "README.md"
+exclude = ["samples/*", "configs/*"]
 
 [[bin]]
 path = "src/main.rs"
