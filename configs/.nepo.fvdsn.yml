@@ -8,7 +8,7 @@ view:
   cmd: bat --style=plain --color=always --chop-long-lines --paging=never --terminal-width=80 --line-range=:40 ${file}
 
 view_code:
-  mode: _view
+  mode: view
   ext:
     - js
     - rs
