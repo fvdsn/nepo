@@ -251,14 +251,13 @@ fn associate_paths(paths: &Vec<String>, mode: &str, associations: &Vec<Associati
 fn main() {
 
     let m = clap::Command::new("nepo")
-        .version("0.1.0")
+        .version("0.1.1")
         .about("Open files according to their type")
         .long_about("
-Nepo lets you open files with a different
-cli tool and arguments according to the
-file and it's content types and properties.
+nepo lets you open files with a different cli tool and
+arguments according to the file extension.
 
-The configuration file is './config.yaml'
+nepo expects at configuration file named '~/.nepo.yml'
         ")
         .author("Frédéric van der Essen")
         .arg(
@@ -295,7 +294,7 @@ The configuration file is './config.yaml'
         )
         .arg(
             Arg::new("filename")
-                .help("The path of the file to open")
+                .help("The path of the file(s) to open")
                 .index(1)
                 .takes_value(true)
                 .multiple_values(true)
