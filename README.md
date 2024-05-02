@@ -5,6 +5,8 @@
 > For example, `nepo image.png` could open the image with the `viu` terminal image viewer and 
 `nepo book.epub` with the `epy` epub reader.
 
+## tldr
+
 `nepo` is configured at `~/.nepo.yml` with simple association rules
 
 ```
