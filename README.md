@@ -39,3 +39,53 @@ With cargo:
 $ cargo install nepo
 ```
 
+## Configuration
+
+It is necessary that you create a nepo configuration file called in your home
+directory called `~/.nepo.yml`. This file will contain an ordered list of files assocations.
+
+```
+default:
+  cmd: vim ${files}
+
+epubs:
+  ext: 
+    - epub
+    - epub3
+  cmd: epy ${file}
+  
+images:
+  ext: 
+    - png
+    - jpg
+  cmd: viu ${files}
+```
+
+The name of each association is not important, but the order is.
+When `nepo` opens a file, it is matched from last association to the
+first. If the filename matches then the command is executed with the
+provided filename. The first association is considered the default and
+will always run if nothing matches.
+
+The `cmd` configuration accepts `${file}` and `${files}` as parameters. 
+The singular variant contains the first filename provided, while the plural
+will contains them all.
+
+If multiple files are provided, only the files with the matching extensions
+will be provided to the command.
+
+
+### Modes
+
+If you call `nepo` with a mode, `nepo --mode=view`, It will only match assocations
+with the selected mode.
+
+```
+view_json:
+  mode: view
+  ext: json
+  cmd: jless ${file}
+```
+
+You can define any mode you want, but the `edit` and `view` mode can be selected
+shorthand `nepo --view, -v, --edit, -e`
