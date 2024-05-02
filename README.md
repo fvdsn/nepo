@@ -2,7 +2,7 @@
 
 `nepo` is a cli tool that open files with a program specific to the file extension.
 
-> For example, `nepo image.png` could open the image with the `viu` terminal image viewer and 
+> For example, `nepo image.png` could open it with the `viu` terminal image viewer and 
 `nepo book.epub` with the `epy` epub reader.
 
 
