@@ -5,6 +5,12 @@
 > For example, `nepo image.png` could open the image with the `viu` terminal image viewer and 
 `nepo book.epub` with the `epy` epub reader.
 
+
+
+[!demo](https://github.com/fvdsn/nepo/assets/16931/6b50a25e-f8c9-474f-b1f8-a2286d87f435)
+
+
+
 ## tldr
 
  - `nepo` is configured at `~/.nepo.yml` with simple association rules
