@@ -27,6 +27,8 @@
 
  - `nepo` is best used with shell aliases such as `function view() { nepo --mode=view "$@" }`
 
+ - Can iterate over multiple files or open them all at once.
+
  - Have a look at [my personal configuration file](configs/.nepo.fvdsn.yml)
 
 ## Install
