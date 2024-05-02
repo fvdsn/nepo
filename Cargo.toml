@@ -2,8 +2,18 @@
 name = "nepo"
 version = "0.1.0"
 edition = "2021"
+description = "Open files in your terminal with the appropriate tool depending on the file extension"
+authors = ["Frédéric van der Essen"]
+license = "GPL-3.0-or-later"
+keywords = ["cli", "terminal", "utility", "file"]
+categories = ["command-line-utilities"]
+homepage = "https://github.com/fvdsn/nepo"
+repository = "https://github.com/fvdsn/nepo"
+readme = "README.md"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+path = "src/main.rs"
+name = "nepo"
 
 [dependencies]
 clap = { version = "3.1.6", features = ["derive"] }

@@ -11,7 +11,7 @@
 
 
 
-## tldr
+## Tldr
 
  - `nepo` is configured at `~/.nepo.yml` with simple association rules
 
