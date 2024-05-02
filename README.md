@@ -43,13 +43,11 @@ directory named `~/.nepo.yml`.
 
 ```
 default:
-  cmd: vim ${files}
+  cmd: vim -p ${files}
 
-epubs:
-  ext: 
-    - epub
-    - epub3
-  cmd: epy ${file}
+markdown:
+  ext: md
+  cmd: glow ${file}
   
 images:
   ext: 
