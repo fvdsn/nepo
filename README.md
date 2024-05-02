@@ -1,6 +1,6 @@
 # nepo
 
-`nepo` is a cli tool that open files with a program specific to the file extension.
+`nepo` is a cli tool that open files with a program depending on the file extension.
 
 > For example, `nepo image.png` could open it with the `viu` terminal image viewer and 
 `nepo book.epub` with the `epy` epub reader.
@@ -28,4 +28,12 @@
  - `nepo` is best used with shell aliases such as `function view() { nepo --mode=view "$@" }`
 
  - Have a look at [my personal configuration file](configs/.nepo.fvdsn.yml)
+
+## Install
+
+With cargo:
+
+```
+$ cargo install nepo
+```
 
