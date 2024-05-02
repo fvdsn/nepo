@@ -1,0 +1,101 @@
+default:
+  cmd: vim -O ${files}
+
+view:
+  mode: view
+  multiple_files: iterate
+  print: " ---------- ${file} ----------"
+  cmd: bat --style=plain --color=always --chop-long-lines --paging=never --terminal-width=80 --line-range=:40 ${file}
+
+view_code:
+  mode: _view
+  ext:
+    - js
+    - rs
+    - py
+    - c
+    - cpp
+    - html
+    - xml
+    - css
+    - htm
+    - vue
+  cmd: vim -O ${files}
+
+json:
+  mode: view
+  ext: json
+  cmd: jless ${file}
+
+csv:
+  mode: view
+  ext: csv
+  cmd: csvlens -d auto ${file}
+
+markdown:
+  mode: view
+  ext: md
+  cmd: glow -p ${file}
+
+binary:
+  mode: view
+  ext: 
+    - bin
+    - out
+    - o
+  cmd: hexyl -n 256 ${file}
+
+images:
+  ext:
+    - png
+    - jpeg
+    - jpg
+    - heic
+    - gif
+  multiple_files: 
+    - match-minority
+    - iterate
+  cmd: viu -x 2 -y 1 -w 40 ${files}
+  print: "Picture: ${file}"
+
+images_edit:
+  mode: edit
+  ext:
+    - png
+    - jpeg
+    - jpg
+    - heic
+  cmd: photoshop ${files}
+
+pdfs:
+  ext: pdf
+  cmd: qlmanage -p ${file}
+
+ebooks:
+  ext: 
+    - epub
+    - epub3
+    - fb2
+    - mobi
+    - asz
+    - azw3
+  cmd: epy ${file}
+
+audio:
+  ext:
+    - mp3
+    - wav
+    - flac
+    - aiff
+    - aac
+  cmd: afinfo ${file}
+
+audio_info:
+  mode: view
+  ext:
+    - mp3
+    - wav
+    - flac
+    - aiff
+    - aac
+  cmd: shuffle ${file}
