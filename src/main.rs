@@ -7,19 +7,19 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 
 use clap;
-use clap::{Arg};
+use clap::Arg;
 use dirs;
 use indexmap::IndexMap;
+use serde::de::{value, Deserializer, SeqAccess, Visitor};
 use serde::{Deserialize, Serialize};
-use serde::de::{value, Deserializer, Visitor, SeqAccess};
-
 
 fn empty_vec() -> Vec<String> {
     return vec![];
 }
 
 fn string_or_vec<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
-    where D: Deserializer<'de>
+where
+    D: Deserializer<'de>,
 {
     // copy-pasted from: https://github.com/serde-rs/serde/issues/889
     struct StringOrVec;
@@ -32,13 +32,15 @@ fn string_or_vec<'de, D>(deserializer: D) -> Result<Vec<String>, D::Error>
         }
 
         fn visit_str<E>(self, s: &str) -> Result<Self::Value, E>
-            where E: serde::de::Error
+        where
+            E: serde::de::Error,
         {
             Ok(vec![s.to_owned()])
         }
 
         fn visit_seq<S>(self, seq: S) -> Result<Self::Value, S::Error>
-            where S: SeqAccess<'de>
+        where
+            S: SeqAccess<'de>,
         {
             Deserialize::deserialize(value::SeqAccessDeserializer::new(seq))
         }
@@ -52,8 +54,6 @@ struct AssociationCfg {
     #[serde(default = "empty_vec", deserialize_with = "string_or_vec")]
     ext: Vec<String>,
     #[serde(default = "empty_vec", deserialize_with = "string_or_vec")]
-    mime: Vec<String>,
-    #[serde(default = "empty_vec", deserialize_with = "string_or_vec")]
     mode: Vec<String>,
     #[serde(default = "empty_vec", deserialize_with = "string_or_vec")]
     multiple_files: Vec<String>,
@@ -63,7 +63,6 @@ struct AssociationCfg {
 
 type AssociationCfgMap = IndexMap<String, AssociationCfg>;
 
-
 #[derive(PartialEq, Debug, Clone, Copy)]
 enum MatchMode {
     All,
@@ -72,12 +71,10 @@ enum MatchMode {
     Minority,
 }
 
-
 #[derive(PartialEq, Debug, Clone)]
 struct Association {
     name: String,
     ext: Vec<String>,
-    mime: Vec<String>,
     mode: Vec<String>,
     cmd: String,
     match_mode: MatchMode,
@@ -88,7 +85,6 @@ struct Association {
 impl Association {
     fn new(name: &String, cfg: &AssociationCfg) -> Association {
         return Association {
-            mime: cfg.mime.clone(),
             name: name.clone(),
             ext: cfg.ext.clone(),
             mode: cfg.mode.clone(),
@@ -106,7 +102,7 @@ impl Association {
                 MatchMode::All
             },
             iterate: cfg.multiple_files.contains(&"iterate".to_string()),
-        }
+        };
     }
 
     fn match_file(&self, mode: &str, paths: &Vec<String>) -> Vec<String> {
@@ -126,7 +122,7 @@ impl Association {
                 Some(ext) => {
                     let ext = ext.to_os_string().into_string().unwrap().to_lowercase();
                     self.ext.is_empty() || self.ext.contains(&ext)
-                },
+                }
                 _ => false,
             };
             if matched {
@@ -136,32 +132,32 @@ impl Association {
         match self.match_mode {
             MatchMode::One => {
                 return ret;
-            },
+            }
             MatchMode::All => {
                 if ret.len() == paths.len() {
                     return ret;
                 } else {
                     return vec![];
                 }
-            },
+            }
             MatchMode::Majority => {
                 if ret.len() >= paths.len() / 2 {
                     return ret;
                 } else {
                     return vec![];
                 }
-            },
+            }
             MatchMode::Minority => {
                 if ret.len() >= paths.len() / 4 {
                     return ret;
                 } else {
                     return vec![];
                 }
-            },
+            }
         }
     }
 
-    fn run_cmd(&self, cmdv:  Vec<String>) {
+    fn run_cmd(&self, cmdv: Vec<String>) {
         let cmd = &cmdv[0].as_str();
 
         let mut args: Vec<String> = vec![];
@@ -181,13 +177,16 @@ impl Association {
     }
 
     fn run(&self, paths: &Vec<String>) {
-
         if !self.iterate {
             if self.print != "" {
-                println!("\n{}", self.print.replace("${files}", &paths.join(" ").as_str()));
+                println!(
+                    "\n{}",
+                    self.print.replace("${files}", &paths.join(" ").as_str())
+                );
             }
 
-            let cmd = self.cmd
+            let cmd = self
+                .cmd
                 .replace("${file}", paths[0].as_str())
                 .replace("${files}", paths.join(" ").as_str());
 
@@ -201,7 +200,8 @@ impl Association {
                     println!("\n{}", self.print.replace("${file}", &path.as_str()));
                 }
 
-                let cmd = self.cmd
+                let cmd = self
+                    .cmd
                     .replace("${file}", path.as_str())
                     .replace("${files}", path.as_str());
 
@@ -222,8 +222,10 @@ fn load_config() -> Vec<Association> {
 
     let mut file = File::open(config_path).expect("Unable to open config file");
     let mut contents = String::new();
-    file.read_to_string(&mut contents).expect("Unable to read config file");
-    let association_cfgs: AssociationCfgMap = serde_yaml::from_str(&contents).expect("Unable to parse config file");
+    file.read_to_string(&mut contents)
+        .expect("Unable to read config file");
+    let association_cfgs: AssociationCfgMap =
+        serde_yaml::from_str(&contents).expect("Unable to parse config file");
 
     for (name, asso_cfg) in &association_cfgs {
         associations.push(Association::new(name, asso_cfg));
@@ -232,7 +234,11 @@ fn load_config() -> Vec<Association> {
     return associations;
 }
 
-fn associate_paths(paths: &Vec<String>, mode: &str, associations: &Vec<Association>) -> (Association, Vec<String>) {
+fn associate_paths(
+    paths: &Vec<String>,
+    mode: &str,
+    associations: &Vec<Association>,
+) -> (Association, Vec<String>) {
     let mut i = associations.len();
 
     loop {
@@ -249,16 +255,17 @@ fn associate_paths(paths: &Vec<String>, mode: &str, associations: &Vec<Associati
 }
 
 fn main() {
-
     let m = clap::Command::new("nepo")
         .version("0.1.1")
         .about("Open files according to their type")
-        .long_about("
+        .long_about(
+            "
 nepo lets you open files with a different cli tool and
 arguments according to the file extension.
 
 nepo expects at configuration file named '~/.nepo.yml'
-        ")
+        ",
+        )
         .author("Frédéric van der Essen")
         .arg(
             Arg::new("debug")
@@ -266,7 +273,7 @@ nepo expects at configuration file named '~/.nepo.yml'
                 .short('d')
                 .takes_value(false)
                 .help("Activate debug logs")
-                .required(false)
+                .required(false),
         )
         .arg(
             Arg::new("view")
@@ -274,7 +281,7 @@ nepo expects at configuration file named '~/.nepo.yml'
                 .short('v')
                 .takes_value(false)
                 .help("Open file in view mode")
-                .required(false)
+                .required(false),
         )
         .arg(
             Arg::new("edit")
@@ -282,7 +289,7 @@ nepo expects at configuration file named '~/.nepo.yml'
                 .short('e')
                 .takes_value(false)
                 .help("Open file in edit mode")
-                .required(false)
+                .required(false),
         )
         .arg(
             Arg::new("mode")
@@ -290,7 +297,7 @@ nepo expects at configuration file named '~/.nepo.yml'
                 .short('m')
                 .takes_value(true)
                 .help("Open file in provided mode")
-                .required(false)
+                .required(false),
         )
         .arg(
             Arg::new("filename")
@@ -298,13 +305,14 @@ nepo expects at configuration file named '~/.nepo.yml'
                 .index(1)
                 .takes_value(true)
                 .multiple_values(true)
-                .required(true)
+                .required(true),
         )
         .after_help("")
         .get_matches();
 
     let associations = load_config();
-    let paths: Vec<String> = m.get_many("filename")
+    let paths: Vec<String> = m
+        .get_many("filename")
         .expect("Please provide the path of the file you want to open.")
         .cloned()
         .collect();
@@ -329,4 +337,67 @@ nepo expects at configuration file named '~/.nepo.yml'
     }
 
     association.run(&matched_paths);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn basic_asc(name: String, ext: Vec<String>) -> Association {
+        return Association {
+            name,
+            ext,
+            mode: vec![],
+            cmd: "".to_string(),
+            match_mode: MatchMode::One,
+            iterate: false,
+            print: "".to_string(),
+        };
+    }
+
+    #[test]
+    fn test_basic() {
+        let associations = vec![basic_asc("hello".to_string(), vec!["txt".to_string()])];
+        let (asc, _) = associate_paths(&vec!["foo.txt".to_string()], "", &associations);
+        assert_eq!(asc.name, "hello")
+    }
+
+    #[test]
+    fn test_associates_ext() {
+        let associations = vec![
+            basic_asc("txts".to_string(), vec!["txt".to_string()]),
+            basic_asc("pngs".to_string(), vec!["png".to_string()]),
+        ];
+        let (asc, _) = associate_paths(&vec!["foo.txt".to_string()], "", &associations);
+        assert_eq!(asc.name, "txts");
+
+        let (asc, _) = associate_paths(&vec!["bar.png".to_string()], "", &associations);
+        assert_eq!(asc.name, "pngs");
+
+        let (asc, _) = associate_paths(&vec!["bim.zip".to_string()], "", &associations);
+        assert_eq!(asc.name, "txts");
+
+        let (asc, _) = associate_paths(&vec!["bar.PNG".to_string()], "", &associations);
+        assert_eq!(asc.name, "pngs");
+    }
+
+    #[test]
+    fn test_associates_ext_multi() {
+        let associations = vec![
+            basic_asc("txts".to_string(), vec!["txt".to_string()]),
+            basic_asc(
+                "imgs".to_string(),
+                vec!["png".to_string(), "jpg".to_string()],
+            ),
+            basic_asc("pngs".to_string(), vec!["png".to_string()]),
+        ];
+        let (asc, _) = associate_paths(&vec!["foo.txt".to_string()], "", &associations);
+        assert_eq!(asc.name, "txts");
+
+        let (asc, _) = associate_paths(&vec!["bar.png".to_string()], "", &associations);
+        assert_eq!(asc.name, "pngs");
+
+        let (asc, _) = associate_paths(&vec!["bim.jpg".to_string()], "", &associations);
+        assert_eq!(asc.name, "imgs");
+    }
 }
